@@ -1,11 +1,10 @@
 using AspNetCoreRateLimit;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
+using System.Text.Json.Serialization;
 using Template_EF_Dapper_JWT_Refresh_WithOutIdentity;
 using Template_EF_Dapper_JWT_Refresh_WithOutIdentity.Extensions;
 using Template_EF_Dapper_JWT_Refresh_WithOutIdentity.Middlewares;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
-using System.Reflection;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,9 +39,9 @@ builder.Services.ConfigureRateLimiting();
 //builder.Services.AddAutoMapper(Assembly.GetEntryAssembly());
 
 
-builder.Services.AddControllers();
-//.AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
-//        .AddNewtonsoftJson();
+builder.Services.AddControllers()
+.AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 //es importante que esto este después de controladores para el manejo de validaciones de model state
 builder.Services.AddValidationErrors();

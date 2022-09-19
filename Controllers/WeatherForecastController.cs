@@ -1,10 +1,14 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using static Template_EF_Dapper_JWT_Refresh_WithOutIdentity.Helpers.AuthTools.Autorizacion;
 
 namespace Template_EF_Dapper_JWT_Refresh_WithOutIdentity.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    [Route("api/testing")]
+    public class WeatherForecastController : CustomBaseController
     {
         private static readonly string[] Summaries = new[]
         {
@@ -18,16 +22,46 @@ namespace Template_EF_Dapper_JWT_Refresh_WithOutIdentity.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+
+
+        [HttpGet("admin-route")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public ActionResult Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+
+            var id = getInfoCurrentUserId();
+            return Ok(new { currentUserId = id });
+        }
+
+
+        [HttpGet("unprotected-route")]
+        public ActionResult anonimo()
+        {
+
+            return Ok(new
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+                ok = true,
+                msg = "Hola esta es una respuesta JSON",
+                Data = "Ruta no protegida"
+            });
+        }
+
+
+        [HttpGet("protected-route")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public ActionResult autorizado()
+        {
+
+            return Ok(new
+            {
+                ok = true,
+                msg = "Hola esta es una respuesta JSON",
+                Data = "Ruta no protegida"
+            });
         }
     }
 }

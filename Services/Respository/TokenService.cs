@@ -98,7 +98,8 @@ namespace Template_EF_Dapper_JWT_Refresh_WithOutIdentity.Services.Respository
               new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
               new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
               new Claim(JwtRegisteredClaimNames.Email, usuario.Email),
-              new Claim("uid", usuario.Id.ToString())
+              new Claim("uid", usuario.Id.ToString()),
+              new Claim("username", usuario.Email)
             }.Union(roleClaims); //unimos los roles
 
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]));
